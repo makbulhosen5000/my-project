@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUpdated, reactive, ref } from 'vue';
+import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
 
 
 
@@ -73,13 +73,45 @@ import { onMounted, onUpdated, reactive, ref } from 'vue';
        fullImage.value = imageList.img;
    }
 
+   //carousel
+   let carousel = null
+   const items = ref([
+      'https://i.ibb.co.com/sHcf1xN/apu.jpg',
+      'https://i.ibb.co.com/BKHMyPT/modern-amphitheater-usa.jpg',
+      'https://i.ibb.co.com/s3MgWrn/building-lake.jpg',
+      'https://i.ibb.co.com/VVXY9fn/school-teaching-building.jpg',
+      'https://i.ibb.co.com/W6Lrzmq/glass-buildings-seen-from-lake.jpg',
+   ]);
+   const newItem = ref('https://i.ibb.co.com/r3D5Kzm/red-buildings-households.jpg');
+   function addNewItem(){
+      items.value.push(newItem.value);
+      // if you add new item you should destroy carousel
+      carousel.destroy();
+      // after destroy you should make again carousel
+      // when dom will update that time nextTick() will call
+      nextTick(function(){
+         carousel = new Flickity('#carousel',{});
+      })
+      //carousel = new Flickity('#carousel',{});
+   }
+   onMounted(()=>{
+      carousel = new Flickity('#carousel',{});
+
+   })
 
 </script>
 <template>
    <!-- carousel -->
-    <section>
 
-    </section>
+   <section class="py-3">
+      <div class="my-5 text-center">
+          <input v-model="newItem" type="text" class="p-2 bg-blue-200 rounded-md mr-2">  
+          <button @click="addNewItem()" class=" rounded-md bg-blue-500 hover:bg-blue-700 text-white font-bold p-2">Add Image</button>
+      </div>
+      <div class="mx-auto items" id="carousel">
+         <div :style="`background-image:url(${item})`" class="item"  v-for="item,index in items" :key="item">{{ index++ }}</div>
+      </div>
+   </section>
    <!-- image show by clicking start -->
    <section class="flex items-center justify-center min-h-screen bg-gray-100">
          <div class="">
@@ -147,5 +179,14 @@ import { onMounted, onUpdated, reactive, ref } from 'vue';
 </template>
 
 <style scoped>
-
+.items{
+   width: 600px;
+   height: 400px;
+}
+.item{
+   width: 600px;
+   height: 400px;
+   background-color: #ccc;
+   background-size: cover;
+}
 </style>
