@@ -5,7 +5,7 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
 
 
 
-   // accordion 2 start
+   // accordion 1 start  inactive index
    const accordions = reactive([
       {
          heading:"About Bangladesh",
@@ -20,7 +20,7 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
 
    ])
 
-   // accordion 1 start active index
+   // accordion 2 start active index
    const activeIndex = ref(0);
 
    // location start
@@ -98,11 +98,38 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
       carousel = new Flickity('#carousel',{});
 
    })
+   //color display 
+   const color = ref('none');
+   function getColor(){
+      return{
+         backgroundColor:color.value
+      }
+   }
+    //<!-- Display Random Image -->
+   const displayImage = ref(true);
 
 </script>
 <template>
+   <!-- Display Random Image -->
+      <section class="flex justify-center items-start">
+      <div class="my-5">
+         <div class="flex gap-2">
+          <p>Display Random Image with v-show {{ displayColor }}</p>
+          <input type="checkbox" class="p-2 bg-blue-200 rounded-md mr-2" v-model="displayImage"> 
+        
+         </div>
+          <img v-show="displayImage" class=" w-56 h-28 py-2" :src="`https://picsum.photos/500/300?random?version=${Math.random()}`" alt="">
+      </div>
+   </section>
+   <!-- color display  -->
+   <section class="flex justify-center items-start">
+      <div class="my-5">
+          <p>Your Favorite Color: {{ color }}</p>
+          <input v-model="color" type="text" class="p-2 bg-blue-200 rounded-md mr-2"> 
+          <div :style="getColor()" class=" w-56 h-28 py-2"></div> 
+      </div>
+   </section>
    <!-- carousel -->
-
    <section class="py-3">
       <div class="my-5 text-center">
           <input v-model="newItem" type="text" class="p-2 bg-blue-200 rounded-md mr-2">  
@@ -112,7 +139,7 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
          <div :style="`background-image:url(${item})`" class="item"  v-for="item,index in items" :key="item">{{ index++ }}</div>
       </div>
    </section>
-   <!-- image show by clicking start -->
+   <!-- image change by clicking start -->
    <section class="flex items-center justify-center min-h-screen bg-gray-100">
          <div class="">
             <!-- Top row with three images -->
@@ -130,7 +157,7 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
    </section>
 
 
-  <!-- accordion 2 start -->
+  <!-- accordion 1 inactive start -->
    <section class=" ml-5 mt-5">
       <h1 class="underline text-blue-900 font-bold">Inactive Accordion</h1>
       <div v-for="accordion in accordions">
@@ -142,7 +169,7 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
          </div>
       </div>
    </section>
-   <!-- accordion 1 start -->
+   <!-- accordion 2 active start -->
    <section class=" ml-5 mt-5">
       <h1 class="underline text-blue-900 font-bold" >Active Accordion</h1>
       <div @click="activeIndex = index" v-for="(accordion,index) in accordions">
