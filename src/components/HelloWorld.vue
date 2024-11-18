@@ -1,6 +1,7 @@
 <script setup>
 import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
-
+import { countries } from '../js/countries';
+import { invoice } from '../js/invoice';
 
 
 
@@ -108,8 +109,155 @@ import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
     //<!-- Display Random Image -->
    const displayImage = ref(true);
 
+   // search
+   const search = ref('');
+   function getFilterCountries(){
+      return countries.filter(country=>{
+         return country.name.toLowerCase().startsWith(search.value.toLowerCase());
+      })
+   }
+   //invoice
+   const data = reactive({
+      sender:'',
+      billTo:'',
+      shipTo:'',
+      invoiceNum:'',
+      date:'',
+      dueDate:'',
+      additionalNote:'',
+      items:[
+         {
+            description:'',
+            quantity:'',
+            rate:'',
+            amount:'',
+         }
+      ],
+      note:'',
+      terms:'',
+      subtotal:'',
+      tax:'',
+      total:'',
+   })
+
+   function addMoreItem(){
+       data.items.push({
+         description:'',
+         quantity:'',
+         rate:'',
+         amount:''
+         })
+   }
+   function getSubTotal(){
+      let subtotal = 0;
+      data.items.forEach(item=>{
+         subtotal += item.amount;
+         data.subtotal = subtotal;
+         return subtotal;
+      })
+   }
+   function getTotal(){
+      let total = 0;
+      const tax = data.subtotal * data.tax / 100;
+      total = data.subtotal + tax;
+      data.total = total;
+      return total;
+   }
+
 </script>
 <template>
+
+   <!-- invoice -->
+   <section class="">
+      <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+         <h2 class="text-2xl font-bold text-gray-800 mb-6">Invoice Layout</h2>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Side -->
+            <div class="space-y-4">
+               <div>
+                  <label for="file" class="block text-sm font-medium text-gray-700"> Sender</label>
+                  <input v-model="data.sender"  type="text" id="file"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm" placeholder="Enter Sender" >
+               </div>
+               <div>
+                  <label for="file" class="block text-sm font-medium text-gray-700"> Bill To</label>
+                  <input v-model="data.billTo"  type="text" id="file"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm" placeholder="Enter Bill To" >
+               </div>
+               <div>
+                  <label for="file" class="block text-sm font-medium text-gray-700"> Ship to</label>
+                  <input v-model="data.shipTo"  type="text" class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm" placeholder="Enter Ship To" >
+               </div>
+            </div>
+            
+            <!-- Right Side -->
+            <div class="space-y-4">
+            <!-- Three Input Fields -->
+               <div>
+                  <label for="field3" class="block text-sm font-medium text-gray-700">Date</label>
+                  <input  v-model="data.date" type="text" id="field3" placeholder="Enter Date"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm">
+               </div>
+               <div>
+                  <label for="field4" class="block text-sm font-medium text-gray-700">Due Date</label>
+                  <input  v-model="data.dueDate" type="text" id="field4" placeholder="Enter Due Date"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm">
+               </div>
+               <div>
+                  <label for="field5" class="block text-sm font-medium text-gray-700">Additional Note</label>
+                  <input  v-model="data.additionalNote" type="text" id="field5" placeholder="Enter Additional Note"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm">
+               </div>
+            </div>
+         </div>
+         <div class="my-5">
+            <table class=" w-full text-left border-collapse border border-gray-300">
+               <thead class="bg-gray-200">
+                  <tr>
+                     <th class="border border-gray-300 px-4 py-2">Description</th>
+                     <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                     <th class="border border-gray-300 px-4 py-2">Rate</th>
+                     <th class="border border-gray-300 px-4 py-2">Amount</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr v-for="(item,index) in data.items" :key="index">
+                     <td class="border border-gray-300 px-4 py-2"><input v-model="item.description" type="text" id="field5" placeholder="Enter Description"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm"></td>
+                     <td class="border border-gray-300 px-4 py-2"><input v-model="item.quantity" type="number" id="field5" placeholder="Enter Quantity"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm"></td>
+                     <td class="border border-gray-300 px-4 py-2"><input v-model="item.rate" type="number" id="field5" placeholder="Enter Rate"  class="mt-1 p-3 block w-full  border-2 border-gray-700 shadow-sm sm:text-sm"></td>
+                     <td  class="border border-gray-300 px-4 py-2">$ {{ item.amount = item.quantity * item.rate }}</td>
+                  </tr>
+               </tbody>
+               <button @click="addMoreItem()" class="bg-green-600 p-2 m-2">Add More</button>
+               <button @click="Object.assign(data,invoice)" class="bg-green-600 p-2 m-2">Load Invoice</button>
+               <tfoot>
+          <tr>
+            <td  colspan="3" class="border border-gray-300 px-4 py-2 text-right font-bold">Subtotal:</td>
+            <td class="border border-gray-300 px-4 py-2" :value="getSubTotal()">${{ data.subtotal}}</td>           
+          </tr>
+          <tr>
+            <td colspan="3" class="border border-gray-300 px-4 py-2 text-right font-bold">Tax:</td>
+            <td class="border border-gray-300 px-4 py-2" ><input v-model="data.tax" type="number" id="field5"></td>
+          </tr>
+          <tr>
+            <td colspan="3" class="border border-gray-300 px-4 py-2 text-right font-bold">Total:</td>
+            <td class="border border-gray-300 px-4 py-2" :value="getTotal()">$ {{ data.total }}</td>
+          </tr>
+        </tfoot>
+            </table>       
+         </div>
+         {{ data }}
+      </div>
+   </section>
+
+   <!-- Search Country -->
+   <section class="flex justify-center items-center gap-16 py-5">
+      <div>
+         <h1>Country {{ search }}</h1>
+         <input  v-model="search"  type="search" class="p-2 bg-blue-200 rounded-md mr-2" placeholder="Search Country"> 
+         
+         <div class="pt-3">
+            <ul>
+               <li v-for="(country,key) in getFilterCountries()" :key="key">{{ country.name }}</li>
+            </ul>
+         </div>
+      </div>
+   </section>
    <!-- Display Random Image -->
       <section class="flex justify-center items-start">
       <div class="my-5">
