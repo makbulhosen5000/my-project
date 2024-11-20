@@ -2,7 +2,7 @@
 import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
 import { countries } from '../js/countries';
 import { invoice } from '../js/invoice';
-
+import PersonComponent from './PersonComponent.vue'
 
 
 
@@ -164,9 +164,25 @@ import { invoice } from '../js/invoice';
       return total;
    }
 
+   const person = reactive({
+      name:'makbul',
+      email:'makbul@gmail.com'
+   })
+
 </script>
 <template>
-
+   
+   <section class="flex items-center justify-center gap-5 pt-3">
+      <p>{{ person.name }}</p>
+      <p>{{ person.email }}</p>
+      <div>
+         <label for="file" class="block text-sm font-medium text-gray-700">{{ person.name }}</label>
+         <input  v-model="person.email"  type="text" class="mt-1 p-3 block   border-2 border-gray-700 shadow-sm sm:text-sm" placeholder="Enter Sender" >
+      </div>
+      <div>
+         <PersonComponent :person="person"/>
+      </div>
+   </section>
    <!-- invoice -->
    <section class="">
       <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
@@ -241,7 +257,6 @@ import { invoice } from '../js/invoice';
         </tfoot>
             </table>       
          </div>
-         {{ data }}
       </div>
    </section>
 
