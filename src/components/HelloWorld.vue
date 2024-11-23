@@ -1,9 +1,10 @@
 <script setup>
-import { nextTick, onMounted, onUpdated, reactive, ref } from 'vue';
+import { nextTick, onMounted, onUpdated, provide, reactive, ref } from 'vue';
 import { countries } from '../js/countries';
 import { invoice } from '../js/invoice';
 import PersonComponent from './PersonComponent.vue'
-
+import Radio from './Radio.vue';
+import CourseA from './CourseA.vue';
 
 
    // accordion 1 start  inactive index
@@ -164,17 +165,39 @@ import PersonComponent from './PersonComponent.vue'
       return total;
    }
 
+   //props with object
    const person = reactive({
       name:'makbul',
       email:'makbul@gmail.com'
    })
 
+   // radio
+   const fruit = ref('apple');
+   //provide
+   const course = reactive({
+      name:'Vue',
+      price:'1500'
+   });
+   provide('course',course);
+   provide('stock',100);
 </script>
 <template>
-   
+
+   <!-- provide -->
+    <CourseA />
+   <!-- radio -->
+      <section class="flex items-center justify-center gap-5 pt-3">
+      <div>
+         <label for="file" class="block text-sm font-medium text-gray-700">My Favorite Fruit</label>
+         <div class="flex gap-2">
+            <Radio v-model="fruit" label="apple" value="apple" />
+            <Radio v-model="fruit" label="guava" value="guava" />
+            <Radio v-model="fruit" label="mango" value="mango" />
+         </div>
+      </div>
+   </section>
+   <!-- props with object -->
    <section class="flex items-center justify-center gap-5 pt-3">
-      <p>{{ person.name }}</p>
-      <p>{{ person.email }}</p>
       <div>
          <label for="file" class="block text-sm font-medium text-gray-700">{{ person.name }}</label>
          <input  v-model="person.email"  type="text" class="mt-1 p-3 block   border-2 border-gray-700 shadow-sm sm:text-sm" placeholder="Enter Sender" >
